@@ -11,7 +11,6 @@ use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\CheeseListingRepository;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
@@ -21,7 +20,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'put'
     ],
     shortName: 'cheeses',
+    attributes: [
+    "pagination_items_per_page" => 10,
+    ],
     denormalizationContext: ['groups' => 'cheese_listing:write', 'swagger_definition_name' => 'Write'],
+    formats: [
+        'json',
+        'html',
+        'csv'=> ['text/csv']
+        ],
     normalizationContext: ['groups' => 'cheese_listing:read', 'swagger_definition_name' => 'Read']
 )]
 #[ORM\Entity(repositoryClass: CheeseListingRepository::class)]
@@ -95,7 +102,7 @@ class CheeseListing
     }
 
     #[Groups(['cheese_listing:read'])]
-    public function getShortDescription(string $description): self
+    public function getShortDescription(): ?string
     {
         if (strlen($this->description) < 40) {
             return $this->description;
