@@ -30,7 +30,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         'html',
         'csv'=> ['text/csv']
         ],
-    normalizationContext: ['groups' => 'cheese_listing:read', 'swagger_definition_name' => 'Read']
+    normalizationContext: ['groups' => 'cheese_listing:read', 'cheese_listing:item:get', 'swagger_definition_name' => 'Read']
 )]
 #[ORM\Entity(repositoryClass: CheeseListingRepository::class)]
 #[ApiFilter(BooleanFilter::class, properties : ['isPublished'])]
@@ -47,7 +47,7 @@ class CheeseListing
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'user:read'])]
     #[Assert\Length(
         min: 2,
         max: 50,
@@ -62,7 +62,7 @@ class CheeseListing
     private $description;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'user:read'])]
     #[Assert\NotBlank]
     private $price;
 
@@ -71,6 +71,13 @@ class CheeseListing
 
     #[ORM\Column(type: 'boolean')]
     private $isPublished = false;
+
+
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
+    #[ORM\ManyToOne(targetEntity: user::class, inversedBy: 'cheeseListings')]
+    #[Assert\Valid]
+    private $owner;
 
     /**
      * CheeseListing constructor.
@@ -163,6 +170,18 @@ class CheeseListing
     public function setIsPublished(bool $isPublished): self
     {
         $this->isPublished = $isPublished;
+
+        return $this;
+    }
+
+    public function getOwner(): ?user
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?user $owner): self
+    {
+        $this->owner = $owner;
 
         return $this;
     }
