@@ -12,6 +12,7 @@ use App\Repository\CheeseListingRepository;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     collectionOperations: ['get', 'post'],
@@ -45,15 +46,24 @@ class CheeseListing
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
     #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Your title name must be at least {{ limit }} characters long',
+        maxMessage: 'Your title name cannot be longer than {{ limit }} characters',
+    )]
     private $title;
 
     #[ORM\Column(type: 'text')]
     #[Groups(['cheese_listing:read'])]
+    #[Assert\NotBlank]
     private $description;
 
     #[ORM\Column(type: 'integer')]
     #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
+    #[Assert\NotBlank]
     private $price;
 
     #[ORM\Column(type: 'datetime')]
