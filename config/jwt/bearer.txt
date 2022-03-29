@@ -1,0 +1,8 @@
+{
+    "iat": 1609096014,
+    "exp": 1609099614,
+    "roles": [
+        "ROLE_USER"
+    ],
+    "username": "user"
+}

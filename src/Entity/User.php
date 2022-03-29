@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => 'user:read']
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[UniqueEntity(fields:['username', 'email'])]
+#[UniqueEntity(fields:['email'])]
 #[ApiFilter(PropertyFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -94,7 +94,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->username;
+        return (string) $this->email;
     }
 
     /**
