@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,6 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields:['username', 'email'])]
+#[ApiFilter(PropertyFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -49,8 +52,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private $username;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: CheeseListing::class)]
-    #[Groups(['user:read'])]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: CheeseListing::class, cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\Valid]
     private $cheeseListings;
 
     public function __construct()

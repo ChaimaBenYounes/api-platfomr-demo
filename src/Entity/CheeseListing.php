@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     collectionOperations: ['get', 'post'],
     itemOperations: [
-        'get'=> ['path'=>'/icheeses/{id}'],
+        'get',
         'put'
     ],
     shortName: 'cheeses',
@@ -34,7 +34,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ORM\Entity(repositoryClass: CheeseListingRepository::class)]
 #[ApiFilter(BooleanFilter::class, properties : ['isPublished'])]
-#[ApiFilter(SearchFilter::class, properties : ['title' => 'partial', 'description' => 'partial'])]
+#[ApiFilter(SearchFilter::class, properties : [
+    'title' => 'partial',
+    'description' => 'partial',
+    'owner' => 'partial'
+])]
 #[ApiFilter(RangeFilter::class, properties : ['price'])]
 #[ApiFilter(PropertyFilter::class)]
 class CheeseListing
@@ -47,7 +51,7 @@ class CheeseListing
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'user:read'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'User:read', 'User:write'])]
     #[Assert\Length(
         min: 2,
         max: 50,
@@ -62,7 +66,7 @@ class CheeseListing
     private $description;
 
     #[ORM\Column(type: 'integer')]
-    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'user:read'])]
+    #[Groups(['cheese_listing:read', 'cheese_listing:write', 'User:read', 'User:write'])]
     #[Assert\NotBlank]
     private $price;
 
@@ -73,9 +77,9 @@ class CheeseListing
     private $isPublished = false;
 
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'cheeseListings')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['cheese_listing:read', 'cheese_listing:write'])]
-    #[ORM\ManyToOne(targetEntity: user::class, inversedBy: 'cheeseListings')]
     #[Assert\Valid]
     private $owner;
 
@@ -129,7 +133,7 @@ class CheeseListing
     }
 
     #The description of the cheese as raw text.
-    #[Groups(['cheese_listing:write'])]
+    #[Groups(['cheese_listing:write', 'User:write'])]
     #[SerializedName (['description'])]
     public function setTextDescription(string $description): self
     {
@@ -174,12 +178,12 @@ class CheeseListing
         return $this;
     }
 
-    public function getOwner(): ?user
+    public function getOwner(): ?User
     {
         return $this->owner;
     }
 
-    public function setOwner(?user $owner): self
+    public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
 
