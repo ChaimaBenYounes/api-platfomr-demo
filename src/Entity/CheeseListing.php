@@ -15,10 +15,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
-    collectionOperations: ['get', 'post'],
+    collectionOperations: [
+        'get',
+        'post' => ['security' => "is_granted('ROLE_USER')"]
+    ],
     itemOperations: [
         'get',
-        'put'
+        'put',
+        'delete' => ['security' => "is_granted('ROLE_ADMIN')"]
     ],
     shortName: 'cheeses',
     attributes: [

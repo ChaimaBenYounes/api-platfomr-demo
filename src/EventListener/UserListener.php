@@ -26,5 +26,7 @@ class UserListener
             $this->passwordHasher->hashPassword($entity, $entity->getPassword())
         );
 
+        $entity->setRoles(['ROLE_USER']); //todo change place
+
     }
 }
